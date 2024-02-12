@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
 public class App2Test 
     extends TestCase
 {
+    Stats stats = new Stats();
     /**
      * Create the test case
      *
@@ -39,7 +40,7 @@ public class App2Test
         // remember, this is "code", you can use functions
         // and loops in the test code
 
-        Game G = new Game ();
+        Game G = new Game (stats);
         UserEvent U = new UserEvent ();
         ServerEvent E = new ServerEvent ();
         G.GameId = 1;

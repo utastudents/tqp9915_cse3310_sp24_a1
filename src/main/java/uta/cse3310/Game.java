@@ -5,27 +5,42 @@ public class Game {
     public PlayerType CurrentTurn;
     public PlayerType[] Button;
     public String[] Msg;
+    public String[] bottomMsg;
     public int GameId;
+    public Stats stats;
+    /*public int gamesPlayed;
+    public int gamesInProgress;
+    public int gamesWonByX;
+    public int gamesWonByO;
+    public int gamesDrawn;*/
 
-    Game() {
+    Game(Stats stats) {
+        this.stats = stats;
         Button = new PlayerType[9];
         // initialize it
         for (int i = 0; i < Button.length; i++) {
             Button[i] = PlayerType.NOPLAYER;
         }
 
-        Msg = new String[2];
+        Msg = new String[10];
         Players = PlayerType.XPLAYER;
         CurrentTurn = PlayerType.NOPLAYER;
         Msg[0] = "Waiting for other player to join";
         Msg[1] = "";
+        bottomMsg = new String[2];
+        //bottomMsg[0] = "test 0";
+        //bottomMsg[1] = "test 1";
     }
 
     public void StartGame() {
         // X player goes first. Because that is how it is.
+        //gamesInProgress++;
         Msg[0] = "You are X. Your turn";
         Msg[1] = "You are O. Other players turn";
         CurrentTurn = PlayerType.XPLAYER;
+        //gamesPlayed++;
+        stats.gamesInProgress++;
+        
     }
 
     private boolean CheckLine(int i, int j, int k, PlayerType player) {
@@ -57,7 +72,6 @@ public class Game {
                 count = count + 1;
             }
         }
-
         return count == 0;
     }
 
@@ -74,6 +88,7 @@ public class Game {
     }
 
     public void Update(UserEvent U) {
+        //gamesPlayed = GameId-1;
         System.out.println("The user event is " + U.PlayerIdx + "  " + U.Button);
 
         if ((CurrentTurn == U.PlayerIdx) && (CurrentTurn == PlayerType.OPLAYER || CurrentTurn == PlayerType.XPLAYER)) {
@@ -101,17 +116,43 @@ public class Game {
             if (CheckBoard(PlayerType.XPLAYER)) {
                 Msg[0] = "You Win!";
                 Msg[1] = "You Lose!";
+                stats.gamesPlayed++;
+                stats.gamesWonByX++;
+                stats.gamesInProgress--;
+                /*gamesPlayed++;
+                gamesWonByX++;
+                gamesInProgress--;*/
                 CurrentTurn = PlayerType.NOPLAYER;
             } else if (CheckBoard(PlayerType.OPLAYER)) {
                 Msg[1] = "You Win!";
                 Msg[0] = "You Lose!";
+                stats.gamesPlayed++;
+                stats.gamesWonByO++;
+                stats.gamesInProgress--;
+                /*gamesPlayed++;
+                gamesWonByO++;
+                gamesInProgress--;*/
                 CurrentTurn = PlayerType.NOPLAYER;
             } else if (CheckDraw(U.PlayerIdx)) {
                 Msg[0] = "Draw";
                 Msg[1] = "Draw";
+                stats.gamesPlayed++;
+                stats.gamesDrawn++;
+                stats.gamesInProgress--;
+                /*gamesPlayed++;
+                gamesDrawn++;
+                gamesInProgress--;*/
                 CurrentTurn = PlayerType.NOPLAYER;
             }
+            bottomMsg[0] = stats.printStats();
+            bottomMsg[1] = stats.printStats();
         }
+        
+        /*Msg[2] = "Games Played: " + gamesPlayed;
+        Msg[3] = "Games In Progress: " + gamesInProgress;
+        Msg[4] = "Games Won By X: " + gamesWonByX;
+        Msg[5] = "Games Won By O: " + gamesWonByO;
+        Msg[6] = "Games Drawn: " + gamesDrawn;*/
     }
 
     public void Tick() {

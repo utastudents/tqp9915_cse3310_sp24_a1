@@ -29,9 +29,17 @@
     </tr>
 </table>
 
+<label id="bottomMessage"></label>
+
 <script>
     var idx = -1;
     var gameid = -1;
+    var gamesplayed = -1;
+    var gamesinprogress = -1;
+    var gameswonbyx = -1;
+    var gameswonbyo = -1;
+    var gamesdrawn = -1;
+
     class UserEvent {
         Button = -1;
         PlayerIdx = 0;
@@ -46,9 +54,12 @@
 
     connection.onopen = function (evt) {
         console.log("open");
+        //gamesPlayed++;
+        //gamesinprogress++;
     }
     connection.onclose = function (evt) {
         console.log("close");
+        //gamesInProgress--;
         document.getElementById("topMessage").innerHTML = "Server Offline"
     }
     const ButtonStateToDisplay = new Map();
@@ -62,6 +73,12 @@
         console.log("Message received: " + msg);
         const obj = JSON.parse(msg);
 
+        gamesplayed = obj.gamesPlayed;
+        gamesinprogress = obj.gamesInProgress;
+        gameswonbyx = obj.gamesWonByX;
+        gameswonbyo = obj.gamesWonByO;
+        gamesdrawn = obj.gamesDrawn;
+
         if ('YouAre' in obj) {
             if (obj.YouAre == "XPLAYER") {
                 idx = 0;
@@ -69,9 +86,10 @@
             else {
                 idx = 1;
             }
-
+            //document.getElementById("bottomMessage").innerHTML = obj.bottomMsg[idx];
             gameid = obj.GameId;
         }
+
         else if ('CurrentTurn' in obj) {
             // only pay attention to this game
             if (gameid == obj.GameId) {
@@ -90,9 +108,13 @@
 
                 // the message line
                 document.getElementById("topMessage").innerHTML = obj.Msg[idx];
+                // document.getElementById("bottomMessage").innerHTML = obj.bottomMsg[idx];
             }
         }
+        document.getElementById("bottomMessage").innerHTML = obj.bottomMsg[idx];
+        
     }
+
 
     function buttonclick(i) {
         U = new UserEvent();
